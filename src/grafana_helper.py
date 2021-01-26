@@ -3,8 +3,9 @@ import base64
 import concurrent.futures
 import json
 from getpass import getpass
+from pathlib import Path
 
-from src.connector import get
+from connector import get
 
 
 class GrafanaAPI:
@@ -63,6 +64,7 @@ class GrafanaAPI:
     def write_to_file(path: str, file_name: str, content: dict) -> None:
         if not path.endswith('/'):
             path = f"{path}/"
+            Path(path).mkdir(parents=True, exist_ok=True)
         with open(f"{path}{file_name}.json", "w") as f:
             f.write(json.dumps(content, indent=4))
 
@@ -71,4 +73,5 @@ class GrafanaAPI:
             path = ''
         with concurrent.futures.ThreadPoolExecutor() as executor:
             [executor.submit(self.write_to_file, path, file_name, value) for file_name, value in content.items()]
+
 
